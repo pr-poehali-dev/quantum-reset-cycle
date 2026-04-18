@@ -1,14 +1,219 @@
+import { useState, useEffect } from "react";
+
+function generateCoupon() {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let code = "СУШ-";
+  for (let i = 0; i < 6; i++) {
+    code += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return code;
+}
+
 export default function Index() {
+  const [promoOpen, setPromoOpen] = useState(false);
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [coupon, setCoupon] = useState("");
+  const [step, setStep] = useState<"form" | "done">("form");
+
+  useEffect(() => {
+    const timer = setTimeout(() => setPromoOpen(true), 3000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!name.trim() || !phone.trim()) return;
+    setCoupon(generateCoupon());
+    setStep("done");
+  }
+
+  function closePromo() {
+    setPromoOpen(false);
+    setStep("form");
+    setName("");
+    setPhone("");
+    setCoupon("");
+  }
+
   return (
     <>
       <div className="grain-overlay" />
+
+      {/* Промо-модальное окно */}
+      {promoOpen && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.7)",
+            zIndex: 9999,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "20px",
+          }}
+          onClick={(e) => e.target === e.currentTarget && closePromo()}
+        >
+          <div
+            style={{
+              background: "var(--bg)",
+              border: "var(--border)",
+              boxShadow: "10px 10px 0 var(--dark)",
+              maxWidth: "480px",
+              width: "100%",
+              padding: "40px 32px",
+              position: "relative",
+            }}
+          >
+            <button
+              onClick={closePromo}
+              style={{
+                position: "absolute",
+                top: "16px",
+                right: "16px",
+                background: "none",
+                border: "none",
+                fontSize: "24px",
+                fontWeight: 800,
+                cursor: "pointer",
+                lineHeight: 1,
+              }}
+            >
+              ×
+            </button>
+
+            {step === "form" ? (
+              <>
+                <div
+                  style={{
+                    background: "var(--primary)",
+                    color: "white",
+                    display: "inline-block",
+                    padding: "4px 12px",
+                    fontWeight: 800,
+                    fontSize: "12px",
+                    textTransform: "uppercase",
+                    marginBottom: "16px",
+                    border: "var(--border)",
+                  }}
+                >
+                  Акция
+                </div>
+                <h2
+                  style={{
+                    fontFamily: "Unbounded, sans-serif",
+                    fontSize: "28px",
+                    fontWeight: 800,
+                    textTransform: "uppercase",
+                    lineHeight: 1.1,
+                    marginBottom: "12px",
+                  }}
+                >
+                  УЧАСТВУЙ В РОЗЫГРЫШЕ
+                </h2>
+                <p style={{ color: "#555", marginBottom: "24px", lineHeight: 1.6 }}>
+                  При заказе от <strong>1 200 ₽</strong> ты получаешь уникальный купон для участия в розыгрыше призов.
+                  Оставь имя и телефон — мы пришлём купон!
+                </p>
+                <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                  <input
+                    type="text"
+                    placeholder="Твоё имя"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                    style={{
+                      border: "var(--border)",
+                      padding: "12px 16px",
+                      fontFamily: "Montserrat, sans-serif",
+                      fontWeight: 600,
+                      fontSize: "14px",
+                      background: "white",
+                      outline: "none",
+                      width: "100%",
+                    }}
+                  />
+                  <input
+                    type="tel"
+                    placeholder="Телефон"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    required
+                    style={{
+                      border: "var(--border)",
+                      padding: "12px 16px",
+                      fontFamily: "Montserrat, sans-serif",
+                      fontWeight: 600,
+                      fontSize: "14px",
+                      background: "white",
+                      outline: "none",
+                      width: "100%",
+                    }}
+                  />
+                  <button
+                    type="submit"
+                    className="btn-cta"
+                    style={{ background: "var(--primary)", color: "white", width: "100%", fontSize: "14px" }}
+                  >
+                    Получить купон
+                  </button>
+                </form>
+              </>
+            ) : (
+              <div style={{ textAlign: "center" }}>
+                <div style={{ fontSize: "48px", marginBottom: "16px" }}>🎉</div>
+                <h2
+                  style={{
+                    fontFamily: "Unbounded, sans-serif",
+                    fontSize: "22px",
+                    fontWeight: 800,
+                    textTransform: "uppercase",
+                    marginBottom: "12px",
+                  }}
+                >
+                  Твой купон готов!
+                </h2>
+                <p style={{ color: "#555", marginBottom: "24px", lineHeight: 1.6 }}>
+                  При заказе от 1 200 ₽ назови этот код — и ты в розыгрыше!
+                </p>
+                <div
+                  style={{
+                    background: "var(--dark)",
+                    color: "var(--accent)",
+                    fontFamily: "Unbounded, sans-serif",
+                    fontSize: "28px",
+                    fontWeight: 800,
+                    letterSpacing: "4px",
+                    padding: "20px",
+                    border: "var(--border)",
+                    marginBottom: "24px",
+                  }}
+                >
+                  {coupon}
+                </div>
+                <p style={{ fontSize: "13px", color: "#888", marginBottom: "20px" }}>
+                  Сохрани код или сделай скриншот
+                </p>
+                <button
+                  className="btn-cta"
+                  onClick={closePromo}
+                  style={{ background: "var(--primary)", color: "white", width: "100%" }}
+                >
+                  Закрыть
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       <header className="header">
         <div className="logo">ЯПОНСКИЕ*СУШИ</div>
         <nav>
           <a href="#">Меню</a>
           <a href="#">О нас</a>
-          <a href="#">Акции</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); setPromoOpen(true); }}>Акции</a>
           <a href="#">Адрес</a>
         </nav>
         <a href="tel:+79523037070" className="btn-cta">Заказать</a>
@@ -29,8 +234,12 @@ export default function Index() {
               <a href="tel:+79523037070" className="btn-cta" style={{ background: "var(--primary)", color: "white" }}>
                 Заказать сейчас
               </a>
-              <button className="btn-cta" style={{ background: "white" }}>
-                Смотреть меню
+              <button
+                className="btn-cta"
+                style={{ background: "white" }}
+                onClick={() => setPromoOpen(true)}
+              >
+                Участвовать в акции
               </button>
             </div>
           </div>
@@ -75,7 +284,6 @@ export default function Index() {
           </div>
 
           <div className="menu-grid">
-            {/* Item 1 */}
             <div className="menu-card">
               <span className="menu-tag">Хит продаж</span>
               <img
@@ -83,14 +291,7 @@ export default function Index() {
                 alt="Нигири с лососем"
               />
               <div className="menu-card-body">
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: "10px",
-                  }}
-                >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
                   <h3>Сет «Токио»</h3>
                   <span className="price">1 490 ₽</span>
                 </div>
@@ -100,11 +301,8 @@ export default function Index() {
               </div>
             </div>
 
-            {/* Item 2 */}
             <div className="menu-card">
-              <span className="menu-tag" style={{ background: "var(--secondary)" }}>
-                Огонь
-              </span>
+              <span className="menu-tag" style={{ background: "var(--secondary)" }}>Огонь</span>
               <img
                 src="https://cdn.poehali.dev/projects/0aeb8543-6068-48d5-a688-c1d9f92bb928/files/b429e844-3bac41b1-8939-c67c6f348a74.jpg"
                 alt="Роллы Спайси"
@@ -114,14 +312,7 @@ export default function Index() {
                 }}
               />
               <div className="menu-card-body">
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: "10px",
-                  }}
-                >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
                   <h3>Спайси Дракон</h3>
                   <span className="price">990 ₽</span>
                 </div>
@@ -131,24 +322,14 @@ export default function Index() {
               </div>
             </div>
 
-            {/* Item 3 */}
             <div className="menu-card">
-              <span className="menu-tag" style={{ background: "var(--accent)", color: "var(--dark)" }}>
-                Популярное
-              </span>
+              <span className="menu-tag" style={{ background: "var(--accent)", color: "var(--dark)" }}>Популярное</span>
               <img
                 src="https://cdn.poehali.dev/projects/0aeb8543-6068-48d5-a688-c1d9f92bb928/files/6ad8bc54-e3f6-4d83-9b3f-b1751f98016e.jpg"
                 alt="Сет Сакура"
               />
               <div className="menu-card-body">
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: "10px",
-                  }}
-                >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
                   <h3>Сет «Сакура»</h3>
                   <span className="price">2 200 ₽</span>
                 </div>
@@ -187,28 +368,16 @@ export default function Index() {
           </h2>
           <div className="social-grid">
             <div className="social-item">
-              <img
-                src="https://cdn.poehali.dev/projects/0aeb8543-6068-48d5-a688-c1d9f92bb928/files/d5160c06-687d-490e-8d37-d95190a26875.jpg"
-                alt="Суши фото 1"
-              />
+              <img src="https://cdn.poehali.dev/projects/0aeb8543-6068-48d5-a688-c1d9f92bb928/files/d5160c06-687d-490e-8d37-d95190a26875.jpg" alt="Суши фото 1" />
             </div>
             <div className="social-item">
-              <img
-                src="https://cdn.poehali.dev/projects/0aeb8543-6068-48d5-a688-c1d9f92bb928/files/6ad8bc54-e3f6-4d83-9b3f-b1751f98016e.jpg"
-                alt="Суши фото 2"
-              />
+              <img src="https://cdn.poehali.dev/projects/0aeb8543-6068-48d5-a688-c1d9f92bb928/files/6ad8bc54-e3f6-4d83-9b3f-b1751f98016e.jpg" alt="Суши фото 2" />
             </div>
             <div className="social-item">
-              <img
-                src="https://cdn.poehali.dev/projects/0aeb8543-6068-48d5-a688-c1d9f92bb928/files/21e49f63-9001-4af6-8055-814fca4ae3b9.jpg"
-                alt="Суши фото 3"
-              />
+              <img src="https://cdn.poehali.dev/projects/0aeb8543-6068-48d5-a688-c1d9f92bb928/files/21e49f63-9001-4af6-8055-814fca4ae3b9.jpg" alt="Суши фото 3" />
             </div>
             <div className="social-item">
-              <img
-                src="https://cdn.poehali.dev/projects/0aeb8543-6068-48d5-a688-c1d9f92bb928/files/b429e844-3bac-41b1-8939-c67c6f348a74.jpg"
-                alt="Суши фото 4"
-              />
+              <img src="https://cdn.poehali.dev/projects/0aeb8543-6068-48d5-a688-c1d9f92bb928/files/b429e844-3bac-41b1-8939-c67c6f348a74.jpg" alt="Суши фото 4" />
             </div>
           </div>
         </section>
@@ -224,26 +393,10 @@ export default function Index() {
         <div className="footer-links">
           <h4>Навигация</h4>
           <ul>
-            <li>
-              <a href="#" style={{ color: "inherit", textDecoration: "none" }}>
-                Меню
-              </a>
-            </li>
-            <li>
-              <a href="#" style={{ color: "inherit", textDecoration: "none" }}>
-                О нас
-              </a>
-            </li>
-            <li>
-              <a href="#" style={{ color: "inherit", textDecoration: "none" }}>
-                Акции
-              </a>
-            </li>
-            <li>
-              <a href="#" style={{ color: "inherit", textDecoration: "none" }}>
-                Контакты
-              </a>
-            </li>
+            <li><a href="#" style={{ color: "inherit", textDecoration: "none" }}>Меню</a></li>
+            <li><a href="#" style={{ color: "inherit", textDecoration: "none" }}>О нас</a></li>
+            <li><a href="#" style={{ color: "inherit", textDecoration: "none" }} onClick={(e) => { e.preventDefault(); setPromoOpen(true); }}>Акции</a></li>
+            <li><a href="#" style={{ color: "inherit", textDecoration: "none" }}>Контакты</a></li>
           </ul>
         </div>
         <div className="footer-links">
