@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 
 const PROMO_URL = "https://functions.poehali.dev/97994864-b8ef-4aa1-a65c-6c224dd09363";
+const PUBLIC_API = "https://functions.poehali.dev/2544f220-2740-43d1-bafd-a762dfb630f9";
+
+interface MenuItem { id: number; name: string; description: string; price: number; image_url: string; tag: string; tag_color: string; is_dish_of_day: boolean; }
+interface Promo { is_active: boolean; title: string; description: string; min_order: number; }
 
 function generateCoupon() {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -18,10 +22,18 @@ export default function Index() {
   const [coupon, setCoupon] = useState("");
   const [step, setStep] = useState<"form" | "done">("form");
   const [loading, setLoading] = useState(false);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [promo, setPromo] = useState<Promo | null>(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => setPromoOpen(true), 3000);
-    return () => clearTimeout(timer);
+    fetch(PUBLIC_API).then(r => r.json()).then(d => {
+      setMenuItems(d.items || []);
+      setPromo(d.promo || null);
+      if (d.promo?.is_active) {
+        const timer = setTimeout(() => setPromoOpen(true), 3000);
+        return () => clearTimeout(timer);
+      }
+    });
   }, []);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -121,11 +133,10 @@ export default function Index() {
                     marginBottom: "12px",
                   }}
                 >
-                  УЧАСТВУЙ В РОЗЫГРЫШЕ
+                  {promo?.title || "УЧАСТВУЙ В РОЗЫГРЫШЕ"}
                 </h2>
                 <p style={{ color: "#555", marginBottom: "24px", lineHeight: 1.6 }}>
-                  При заказе от <strong>1 200 ₽</strong> ты получаешь уникальный купон для участия в розыгрыше призов.
-                  Оставь имя и телефон — мы пришлём купон!
+                  {promo?.description || `При заказе от ${promo?.min_order?.toLocaleString() || "1 200"} ₽ ты получаешь уникальный купон.`}
                 </p>
                 <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                   <input
@@ -296,60 +307,20 @@ export default function Index() {
           </div>
 
           <div className="menu-grid">
-            <div className="menu-card">
-              <span className="menu-tag">Хит продаж</span>
-              <img
-                src="https://cdn.poehali.dev/projects/0aeb8543-6068-48d5-a688-c1d9f92bb928/files/d5160c06-687d-490e-8d37-d95190a26875.jpg"
-                alt="Нигири с лососем"
-              />
-              <div className="menu-card-body">
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-                  <h3>Сет «Токио»</h3>
-                  <span className="price">1 490 ₽</span>
+            {menuItems.map(item => (
+              <div className="menu-card" key={item.id}>
+                {item.is_dish_of_day && <span className="menu-tag" style={{ background: "#f5c842", color: "#1a1a1a" }}>Блюдо дня</span>}
+                {!item.is_dish_of_day && item.tag && <span className="menu-tag" style={{ background: item.tag_color, color: "white" }}>{item.tag}</span>}
+                <img src={item.image_url} alt={item.name} />
+                <div className="menu-card-body">
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+                    <h3>{item.name}</h3>
+                    <span className="price">{item.price.toLocaleString()} ₽</span>
+                  </div>
+                  <p style={{ fontSize: "14px", color: "#666" }}>{item.description}</p>
                 </div>
-                <p style={{ fontSize: "14px", color: "#666" }}>
-                  12 нигири из лосося, тунца и угря. Подаётся с соусом понзу и маринованным имбирём.
-                </p>
               </div>
-            </div>
-
-            <div className="menu-card">
-              <span className="menu-tag" style={{ background: "var(--secondary)" }}>Огонь</span>
-              <img
-                src="https://cdn.poehali.dev/projects/0aeb8543-6068-48d5-a688-c1d9f92bb928/files/b429e844-3bac41b1-8939-c67c6f348a74.jpg"
-                alt="Роллы Спайси"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src =
-                    "https://cdn.poehali.dev/projects/0aeb8543-6068-48d5-a688-c1d9f92bb928/files/6ad8bc54-e3f6-4d83-9b3f-b1751f98016e.jpg";
-                }}
-              />
-              <div className="menu-card-body">
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-                  <h3>Спайси Дракон</h3>
-                  <span className="price">990 ₽</span>
-                </div>
-                <p style={{ fontSize: "14px", color: "#666" }}>
-                  Острый тунец, авокадо, огурец, сверху — запечённый лосось с соусом шрирача.
-                </p>
-              </div>
-            </div>
-
-            <div className="menu-card">
-              <span className="menu-tag" style={{ background: "var(--accent)", color: "var(--dark)" }}>Популярное</span>
-              <img
-                src="https://cdn.poehali.dev/projects/0aeb8543-6068-48d5-a688-c1d9f92bb928/files/6ad8bc54-e3f6-4d83-9b3f-b1751f98016e.jpg"
-                alt="Сет Сакура"
-              />
-              <div className="menu-card-body">
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-                  <h3>Сет «Сакура»</h3>
-                  <span className="price">2 200 ₽</span>
-                </div>
-                <p style={{ fontSize: "14px", color: "#666" }}>
-                  32 ролла на выбор: Филадельфия, Калифорния, Радуга и Дракон. Идеально на двоих.
-                </p>
-              </div>
-            </div>
+            ))}
           </div>
         </section>
 
