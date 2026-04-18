@@ -256,9 +256,12 @@ export default function Index() {
         <div className="footer-links">
           <h4>Контакты</h4>
           <ul>
-            <li>+7 (999) 000-00-00</li>
-            <li>hello@sushizen.ru</li>
-            <li>@sushi.zen</li>
+            <li>г. Архангельск, ул. Гайдара, 30</li>
+            <li>
+              <a href="tel:+79523037070" style={{ color: "inherit", textDecoration: "none" }}>
+                +7 (952) 303-70-70
+              </a>
+            </li>
           </ul>
         </div>
       </footer>
