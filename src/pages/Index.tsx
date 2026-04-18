@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 
+const PROMO_URL = "https://functions.poehali.dev/97994864-b8ef-4aa1-a65c-6c224dd09363";
+
 function generateCoupon() {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   let code = "СУШ-";
@@ -15,16 +17,25 @@ export default function Index() {
   const [phone, setPhone] = useState("");
   const [coupon, setCoupon] = useState("");
   const [step, setStep] = useState<"form" | "done">("form");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => setPromoOpen(true), 3000);
     return () => clearTimeout(timer);
   }, []);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!name.trim() || !phone.trim()) return;
-    setCoupon(generateCoupon());
+    const newCoupon = generateCoupon();
+    setLoading(true);
+    await fetch(PROMO_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, phone, coupon: newCoupon }),
+    });
+    setLoading(false);
+    setCoupon(newCoupon);
     setStep("done");
   }
 
@@ -154,9 +165,10 @@ export default function Index() {
                   <button
                     type="submit"
                     className="btn-cta"
-                    style={{ background: "var(--primary)", color: "white", width: "100%", fontSize: "14px" }}
+                    disabled={loading}
+                    style={{ background: "var(--primary)", color: "white", width: "100%", fontSize: "14px", opacity: loading ? 0.7 : 1 }}
                   >
-                    Получить купон
+                    {loading ? "Сохраняем..." : "Получить купон"}
                   </button>
                 </form>
               </>
