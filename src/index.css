@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Unbounded:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&subset=cyrillic&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Unbounded:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&subset=cyrillic&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -7,11 +7,11 @@
 @layer base {
   :root {
     /* Vinyl Diner theme variables */
-    --primary: #ff4d00;
+    --primary: #c0392b;
     --secondary: #2d31fa;
-    --bg: #fdf9f0;
+    --bg: #fdf8f5;
     --dark: #1a1a1a;
-    --accent: #bff000;
+    --accent: #f5c842;
     --border: 3px solid #1a1a1a;
     --shadow: 8px 8px 0px #1a1a1a;
 
