@@ -11,7 +11,7 @@ export default function Index() {
           <a href="#">Акции</a>
           <a href="#">Адрес</a>
         </nav>
-        <button className="btn-cta">Заказать</button>
+        <a href="tel:+79523037070" className="btn-cta">Заказать</a>
       </header>
 
       <main>
@@ -26,9 +26,9 @@ export default function Index() {
               Свежайший лосось, тунец и угорь. Каждый ролл — это маленькое произведение искусства в духе токийских 70-х.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-5">
-              <button className="btn-cta" style={{ background: "var(--primary)", color: "white" }}>
+              <a href="tel:+79523037070" className="btn-cta" style={{ background: "var(--primary)", color: "white" }}>
                 Заказать сейчас
-              </button>
+              </a>
               <button className="btn-cta" style={{ background: "white" }}>
                 Смотреть меню
               </button>
