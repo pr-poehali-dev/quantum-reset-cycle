@@ -4,7 +4,7 @@ export default function Index() {
       <div className="grain-overlay" />
 
       <header className="header">
-        <div className="logo">SUSHI*ZEN</div>
+        <div className="logo">ЯПОНСКИЕ*СУШИ</div>
         <nav>
           <a href="#">Меню</a>
           <a href="#">О нас</a>
@@ -183,7 +183,7 @@ export default function Index() {
 
         <section className="section-padding">
           <h2 className="section-title" style={{ marginBottom: "40px", textAlign: "center" }}>
-            @SUSHI.ZEN
+            @ЯПОНСКИЕ.СУШИ
           </h2>
           <div className="social-grid">
             <div className="social-item">
@@ -216,7 +216,7 @@ export default function Index() {
 
       <footer>
         <div>
-          <div className="footer-logo">SUSHI*ZEN</div>
+          <div className="footer-logo">ЯПОНСКИЕ*СУШИ</div>
           <p style={{ color: "#666", lineHeight: 1.6 }}>
             Японская кухня в духе ретро. Свежайшие ингредиенты, мастерство шефа и атмосфера как в Токио 70-х.
           </p>
